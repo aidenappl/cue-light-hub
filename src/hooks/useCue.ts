@@ -36,7 +36,7 @@ export const getTargets = (): Targets[] => {
     {
       id: 1,
       targetName: "Light Board Operator",
-      targetDescription: "Front of house",
+      targetDescription: "Booth LBO",
       targetStatus: "active",
       targetAction: "none",
       targetID: "LBO",
@@ -45,7 +45,7 @@ export const getTargets = (): Targets[] => {
     {
       id: 3,
       targetName: "Sound Board Operator",
-      targetDescription: "Front of house",
+      targetDescription: "Booth SBO",
       targetStatus: "active",
       targetAction: "none",
       targetID: "SBO",
@@ -53,78 +53,69 @@ export const getTargets = (): Targets[] => {
     },
     {
       id: 5,
+      targetName: "Midstage Drape",
+      targetDescription: "Traveler",
+      targetStatus: "active",
+      targetAction: "none",
+      targetID: "MSD",
+      targetGroup: "trks",
+    },
+    {
+      id: 6,
+      targetName: "Track 2",
+      targetDescription: "Walls - Castle General",
+      targetStatus: "active",
+      targetAction: "none",
+      targetID: "TRK2",
+      targetGroup: "trks",
+    },
+    {
+      id: 7,
+      targetName: "Track 3",
+      targetDescription: "Walls - Castle Window",
+      targetStatus: "active",
+      targetAction: "none",
+      targetID: "TRK3",
+      targetGroup: "trks",
+    },
+    {
+      id: 8,
+      targetName: "Track 4",
+      targetDescription: "Walls - Castle Door",
+      targetStatus: "active",
+      targetAction: "none",
+      targetID: "TRK4",
+      targetGroup: "trks",
+    },
+    {
+      id: 9,
+      targetName: "Track 5",
+      targetDescription: "Columns - Ice Castle",
+      targetStatus: "active",
+      targetAction: "none",
+      targetID: "TRK5",
+      targetGroup: "trks",
+    },
+    {
+      id: 10,
       targetName: "Lineset 1",
-      targetDescription: "Front of house",
+      targetDescription: "Chandeliers",
       targetStatus: "active",
       targetAction: "none",
       targetID: "LS1",
       targetGroup: "flys",
     },
     {
-      id: 6,
+      id: 11,
       targetName: "Lineset 2",
-      targetDescription: "Back of house",
+      targetDescription: "Beads - Ice Castle",
       targetStatus: "active",
       targetAction: "none",
       targetID: "LS2",
       targetGroup: "flys",
     },
     {
-      id: 7,
-      targetName: "Lineset 3",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS3",
-      targetGroup: "flys",
-    },
-    {
-      id: 8,
-      targetName: "Lineset 4",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS4",
-      targetGroup: "flys",
-    },
-    {
-      id: 9,
-      targetName: "Lineset 5",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS5",
-      targetGroup: "flys",
-    },
-    {
-      id: 10,
-      targetName: "Lineset 6",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS6",
-      targetGroup: "flys",
-    },
-    {
-      id: 11,
-      targetName: "Lineset 7",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS7",
-      targetGroup: "flys",
-    },
-    {
       id: 12,
-      targetName: "Lineset 8",
-      targetDescription: "Back of house",
-      targetStatus: "active",
-      targetAction: "none",
-      targetID: "LS8",
-      targetGroup: "flys",
-    },
-    {
-      id: 5,
       targetName: "Main Drape",
       targetDescription: "Front of house",
       targetStatus: "active",
@@ -273,9 +264,23 @@ export const useCue = () => {
   const [cueList, setCueList] = useState<Cue[]>([]);
   const [targets, setTargets] = useState<Targets[]>([]);
 
+  const resetStack = () => {
+    const cueListCopy = [...cueList];
+    cueListCopy.forEach((cue) => {
+      cue.active = false;
+    });
+    setCueList(cueListCopy);
+    // clear all targets
+    targets.forEach((target) => {
+      target.targetAction = "none";
+      target.commandID = undefined;
+    });
+    setTargets([...targets]);
+  };
+
   const fireCue = () => {
-    let cueListCopy = [...cueList];
-    let activeCue = cueListCopy.find((cue) => cue.active);
+    const cueListCopy = [...cueList];
+    const activeCue = cueListCopy.find((cue) => cue.active);
     // check if at end of stack
     if (activeCue && activeCue.id === cueListCopy[cueListCopy.length - 1].id) {
       console.log("At end of stack");
@@ -283,13 +288,13 @@ export const useCue = () => {
     }
     if (activeCue) {
       activeCue.active = false;
-      let nextCue = cueListCopy[cueListCopy.indexOf(activeCue) + 1];
+      const nextCue = cueListCopy[cueListCopy.indexOf(activeCue) + 1];
       if (nextCue) {
         nextCue.active = true;
         determineCommands(nextCue);
       }
     } else {
-      let firstCue = cueListCopy[0];
+      const firstCue = cueListCopy[0];
       if (firstCue) {
         firstCue.active = true;
         determineCommands(firstCue);
@@ -300,8 +305,8 @@ export const useCue = () => {
   };
 
   const backCue = () => {
-    let cueListCopy = [...cueList];
-    let activeCue = cueListCopy.find((cue) => cue.active);
+    const cueListCopy = [...cueList];
+    const activeCue = cueListCopy.find((cue) => cue.active);
     // check if at beginning of stack
     if (activeCue && activeCue.id === cueListCopy[0].id) {
       console.log("At beginning of stack");
@@ -319,7 +324,7 @@ export const useCue = () => {
     }
     if (activeCue) {
       activeCue.active = false;
-      let prevCue = cueListCopy[cueListCopy.indexOf(activeCue) - 1];
+      const prevCue = cueListCopy[cueListCopy.indexOf(activeCue) - 1];
       if (prevCue) {
         prevCue.active = true;
         determineCommands(prevCue, true);
@@ -345,7 +350,7 @@ export const useCue = () => {
       // if multiple targets
       if (Array.isArray(command.target)) {
         command.target.forEach((targetID) => {
-          let target = targets.filter(
+          const target = targets.filter(
             (target) =>
               target.targetID === targetID || target.targetGroup === targetID
           );
@@ -357,7 +362,7 @@ export const useCue = () => {
           }
         });
       } else {
-        let target = targets.filter(
+        const target = targets.filter(
           (target) =>
             target.targetID === command.target ||
             target.targetGroup === command.target
@@ -380,8 +385,8 @@ export const useCue = () => {
         if (command.target instanceof Array) {
           // if multiple targets, clear after 5 seconds
           setTimeout(() => {
-            (command.target as String[]).forEach((targetID) => {
-              let target = targets.filter(
+            (command.target as string[]).forEach((targetID) => {
+              const target = targets.filter(
                 (target) =>
                   target.targetID === targetID ||
                   target.targetGroup === targetID
@@ -396,7 +401,7 @@ export const useCue = () => {
           }, command.time * 1000);
         } else {
           setTimeout(() => {
-            let target = targets.filter(
+            const target = targets.filter(
               (target) =>
                 target.targetID === command.target ||
                 target.targetGroup === command.target
@@ -411,7 +416,7 @@ export const useCue = () => {
         }
       } else {
         setTimeout(() => {
-          let target = targets.filter(
+          const target = targets.filter(
             (target) =>
               target.targetID === command.target ||
               target.targetGroup === command.target
@@ -428,8 +433,8 @@ export const useCue = () => {
   };
 
   const jumpToCue = (cueID: number) => {
-    let cueListCopy = [...cueList];
-    let activeCue = cueListCopy.find((cue) => cue.active);
+    const cueListCopy = [...cueList];
+    const activeCue = cueListCopy.find((cue) => cue.active);
     if (activeCue) {
       activeCue.active = false;
     }
@@ -438,7 +443,7 @@ export const useCue = () => {
       target.targetAction = "none";
       target.commandID = undefined;
     });
-    let nextCue = cueListCopy.find((cue) => cue.id === cueID);
+    const nextCue = cueListCopy.find((cue) => cue.id === cueID);
     if (nextCue) {
       nextCue.active = true;
       determineCommands(nextCue);
@@ -447,14 +452,14 @@ export const useCue = () => {
   };
 
   const addCue = (cue: Cue) => {
-    let cueListCopy = [...cueList];
+    const cueListCopy = [...cueList];
     cueListCopy.push(cue);
     setCueList(cueListCopy);
   };
 
   const resetTarget = (targetID: string) => {
-    let targetsCopy = [...targets];
-    let target = targetsCopy.find((target) => target.targetID === targetID);
+    const targetsCopy = [...targets];
+    const target = targetsCopy.find((target) => target.targetID === targetID);
     if (target) {
       target.targetAction = "none";
       target.commandID = undefined;
@@ -463,7 +468,7 @@ export const useCue = () => {
   };
 
   const lookupCommandID = (commandID: number) => {
-    let command = cueList
+    const command = cueList
       .map((cue) => cue.commands)
       .flat()
       .find((c) => c.id === commandID);
@@ -473,12 +478,20 @@ export const useCue = () => {
     return command.cueName;
   };
 
+  const editCue = (cue: Cue) => {
+    if (!cue) {return}
+    
+    
+  };
+
   const activeCue = cueList.find((cue) => cue.active);
 
   return {
     cueList,
     setCueList,
+    editCue,
     fireCue,
+    resetStack,
     backCue,
     addCue,
     activeCue,

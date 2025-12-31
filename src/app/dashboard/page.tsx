@@ -23,7 +23,9 @@ const Dashboard = () => {
     fireCue,
     backCue,
     activeCue,
+    editCue,
     targets,
+    resetStack,
     jumpToCue,
     setTargets,
     lookupCommandID,
@@ -45,9 +47,19 @@ const Dashboard = () => {
       <div className="p-10">
         <div className="flex flex-row justify-between w-full">
           <div className="w-full">
-            <div>
-              <Button onClick={fireCue}>Go</Button>
-              <Button onClick={backCue}>Back</Button>
+            <div className="flex gap-1">
+              <Button
+                onClick={fireCue}
+                className="bg-green-500 hover:bg-green-400"
+              >
+                Go
+              </Button>
+              <Button onClick={backCue} style="secondary">
+                Back
+              </Button>
+              <Button onClick={resetStack} style="danger">
+                Reset
+              </Button>
             </div>
             <h2 className="text-lg font-semibold">Cue Stack</h2>
             {cueList.map((cue: Cue, idx: number) => {
@@ -62,14 +74,16 @@ const Dashboard = () => {
                     <h2 className="font-semibold">{cue.name}</h2>
                     <p>{cue.description}</p>
                   </div>
-                  <Button style="secondary">Edit</Button>
+                  <Button style="secondary" onClick={() => editCue(cue)}>
+                    Edit
+                  </Button>
                 </div>
               );
             })}
             <div>
               <h2 className="text-lg font-semibold">Active Cue</h2>
               <div className="p-3 bg-slate-100 rounded border shadow w-fit h-fit min-w-[200px]">
-                <h2>{activeCue?.name}</h2>
+                <h2 className="font-semibold">{activeCue?.name}</h2>
                 <p>{activeCue?.description}</p>
               </div>
             </div>
@@ -103,8 +117,8 @@ const Dashboard = () => {
                   "use client";
                   let tar = formData.get("target") as string;
                   let tarArr: string[] = [];
-                  let time = formData.get("time") as string;
-                  let timeInt = parseInt(time?.toLowerCase().trim());
+                  const time = formData.get("time") as string;
+                  const timeInt = parseInt(time?.toLowerCase().trim());
 
                   if (tar.includes(",")) {
                     tarArr = tar.split(",").map((t) => t.trim());
@@ -156,7 +170,7 @@ const Dashboard = () => {
                     <p>{command.cueName}</p>
                     <p>{command.cueDesc}</p>
                     <p>{command.action}</p>
-                    <p>{command.time}</p>
+                    <p>{command.time} Second Hold</p>
                   </div>
                 );
               })}
@@ -174,7 +188,10 @@ const Dashboard = () => {
                 >
                   <p className="font-semibold">{command.cueName}</p>
                   <p>{command.action}</p>
-                  <p>{command.time}</p>
+                  <p>
+                    {command.time}
+                    {command.time != null ? "s hold" : ""}
+                  </p>
                 </div>
               );
             })}
@@ -185,7 +202,10 @@ const Dashboard = () => {
           <div className="grid gap-2 grid-cols-4 md:grid-cols-5 lg:grid-cols-6 xl:grid-cols-7 2xl:grid-cols-8">
             {targets.map((target, idx) => {
               return (
-                <div className="w-full h-full flex items-center justify-center">
+                <div
+                  className="w-full h-full flex items-center justify-center"
+                  key={idx}
+                >
                   <div
                     onClick={() => resetTarget(target.targetID)}
                     key={idx}
@@ -193,7 +213,7 @@ const Dashboard = () => {
                       target.targetAction == "ready"
                         ? "animate-BLINK-READY"
                         : target.targetAction == "go"
-                        ? "bg-green-400"
+                        ? "!bg-green-400"
                         : ""
                     }`}
                   >

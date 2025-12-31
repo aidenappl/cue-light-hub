@@ -42,7 +42,7 @@ const Select = (props: SelectProps) => {
 
   return (
     <div ref={selectRef} className={className}>
-      <select hidden name={name} value={selected.value}>
+      <select hidden name={name} value={selected.value} onChange={() => {}}>
         {items.map((item, index) => (
           <option key={index} value={item.value}>
             {item.name}
